@@ -1,5 +1,5 @@
 #! /usr/bin/awk -f
-
+#This script detect the position (column) the all fields with .L pattern. This script is run over the header file of the substances. The output is converted into a .sh script. The .sh script is named extract_columns.sh 
 BEGIN{FS="\t"
 }
 {lista=""
