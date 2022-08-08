@@ -1,0 +1,12 @@
+# # Frequency plot of frequency of number of references
+set xrange [1:1024]
+unset logscale
+unset logscale
+set xlabel "Number of references for reaction detail in SS reactions."
+set ylabel "Frequency"
+set logscale
+unset xrange
+plot "4countRefsFreqSS.txt" u 1:2 w p pt 7 ps 2
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "6freqRefs1.png"
+replot

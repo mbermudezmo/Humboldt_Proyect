@@ -1,0 +1,11 @@
+## Plot density
+unset logscale
+set xrange [1801:2022]
+set key left top
+set grid y
+set grid x lw 2 
+set xtics 4 rotate by 90 right
+plot "3density.txt" u 1:2 w lp title "Density = #substances / #reactions"
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "5density.png"
+replot

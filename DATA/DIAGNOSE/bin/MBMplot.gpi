@@ -1,0 +1,105 @@
+set datafile separator "\t"
+set xrange [1800:2022]
+set logscale y
+set grid y
+set grid x lw 2 
+set xtics 4 rotate by 90 right
+set key left top
+
+# Plot counts of reaction schemes
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+
+plot "1countRxnsSS.txt" u 1:2 w lp title "New SS reactions published in patents" pt 7
+replot "1countRxnsSS.txt" u 1:3 w lp title "New SS reactions published in academic journals" pt 7
+replot "1countRxnsSS.txt" u 1:4 w lp title "Sum" pt 7
+
+set output "1rxnsYear.png"
+replot
+
+## Plot count of rxnid+rxds
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+plot "1countRxnsSS.txt" u 1:5 w lp title "New SS RXDs published in patents" pt 7
+replot "1countRxnsSS.txt" u 1:6 w lp title "New SS RXDs published in academic journals" pt 7
+replot "1countRxnsSS.txt" u 1:7 w lp title "Sum" pt 7
+
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "2RXDsYear.png"
+replot
+
+# Plot counts of reaction schemes and number of substances in SS reactions
+plot "1countRxnsSS.txt" u 1:3 w lp title "New SS reactions published in academic journals" pt 7
+replot "2countSubsSS.txt" u 1:7 w lp title "New substances in reactions published in academic journals" pt 7
+
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "3rxnsSubsYear.png"
+replot
+
+# # Plot count of new substances in single step reactions, separated by role in reaction
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set xlabel "Number of new substances in SS reactions, as reported in different roles."
+plot "2countSubsSS.txt" u 1:2 w lp title "Reactives" pt 7 ps 2
+replot "2countSubsSS.txt" u 1:3 w lp title "Reagents"  ps 2
+replot "2countSubsSS.txt" u 1:4 w lp title "Catalysts"  ps 2
+replot "2countSubsSS.txt" u 1:5 w lp title "Solvents"  ps 2
+replot "2countSubsSS.txt" u 1:6 w lp title "Products"  ps 2
+replot "2countSubsSS.txt" u 1:7 w lp title "Total Sum"  ps 2
+
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "4numSubsRoleSS.png"
+replot
+
+## Plot density
+unset logscale
+set xrange [1801:2022]
+set key left top
+set grid y
+set grid x lw 2 
+set xtics 4 rotate by 90 right
+plot "3density.txt" u 1:2 w lp title "Density = #substances / #reactions"
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "5density.png"
+replot
+
+# # Frequency plot of frequency of number of references
+unset logscale
+unset logscale
+set xlabel "Number of references for reaction detail in SS reactions."
+set ylabel "Frequency"
+set logscale
+unset xrange
+plot "4countRefsFreqSS.txt" u 1:2 w p pt 7 ps 2
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "6freqRefs.png"
+replot
+
+# Frequency plot of number of variants vs number of references
+set xlabel "Number of references"
+set ylabel "Number of variants"
+set view map
+set nokey
+set logscale
+set ztics 1,8,1
+
+splot "5countVarsRefsSS.txt" using 1:2:3 with points pointtype 7 pointsize 1.5 palette
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "7freqVarsRefs.png"
+replot
+
+# Integrating over each of the variables of the plot above, get frequency of variants, and of references, individually
+# References
+set logscale
+set xlabel "Number of references to a SS reaction scheme"
+plot "6numRefsRXID.txt" u 1:2 w p pt 7 
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "8freqRefsRXID.png"
+replot
+
+# Variations
+set logscale
+set xlabel "Number of variations to a SS reaction scheme"
+plot "7numVariationsRXID.txt" u 1:2 w p pt 7 
+set terminal pngcairo enhanced size 2500,1500 font "Helvetica,30"
+set output "9freqVarsRXID.png"
+replot
+
+
