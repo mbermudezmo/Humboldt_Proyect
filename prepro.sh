@@ -6,6 +6,7 @@
 
 pre_rxn=''
 pre_sub=''
+pre_subA=''
 pre_cit=''
 pre_dpi=''
 date=$(date +%d_%b_%y)	# Store date as a variable
@@ -14,15 +15,17 @@ print_usage() {
   printf "\n\nUsage %s:\n\n" $0 
   echo "	[-r] Preprocess downloaded Reaction data"
   echo "	[-s] Preprocess downloaded Substance data"
+  echo "	[-a] Preprocess downloaded Substance data"
   echo "	[-c] Preprocess downloaded Citation data"
   echo "	[-b] Preprocess downloaded DPI data"  
 }
 
 # Parse arguments
-while getopts 'rscb' flag; do
+while getopts 'rsacb' flag; do
   case "${flag}" in
     r) preproc_rxn=1 ;;
     s) preproc_sub=1 ;;
+    a) preproc_subA=1 ;;
     c) preproc_cit=1 ;;
     b) preproc_dpi=1 ;;
     ?) print_usage
@@ -63,6 +66,20 @@ if [ -n "$preproc_sub" ]; then
 	cat PREP/P_SUB/scr_$date/* > PREP/P_SUB/scr_$date/all_subds.tsv
 	awk '!x[$0]++' PREP/P_SUB/scr_$date/all_subds.tsv > PREP/P_SUB/scr_$date/unique_all_subds.tsv
 	cat PREP/P_SUB/head_subs.tsv PREP/P_SUB/scr_$date/unique_all_subds.tsv > PREP/P_SUB/scr_$date/heads_unique_all_subds.tsv
+fi
+# Extract rxn ID, reactants, reagents, etc..., dates. from rxn data
+if [ -n "$preproc_subA" ]; then
+	mkdir "PREP/P_SUB/scr_$date"
+	for i in $(seq 1 20) # Iterate over directories (and parallel process each) so that argument list for parallel is short enough
+	do
+	    echo $i
+	    d=$(echo $i-1 | bc -l)	# compute $i - 1
+	    parallel -j20 "PREP/age_of_substances.awk {} >> PREP/P_SUB/scr_$date/subds{%}.tsv" ::: $(ls DATA/SUB/p$d/n*xml)
+	done
+	# Concatenate results of previous script
+	cat PREP/P_SUB/scr_$date/* > PREP/P_SUB/scr_$date/all_subds.tsv
+	awk '!x[$0]++' PREP/P_SUB/scr_$date/all_subds.tsv > PREP/P_SUB/scr_$date/unique_all_subds.tsv
+	cat PREP/P_SUB/headA_subs.tsv PREP/P_SUB/scr_$date/unique_all_subds.tsv > PREP/P_SUB/scr_$date/heads_unique_all_subds.tsv
 fi
 
 ### Produce some routinary plots (sanity check)
