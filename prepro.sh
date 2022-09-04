@@ -42,17 +42,17 @@ if [ -n "$preproc_rxn" ]; then
 	mkdir "PREP/P_RXN/scr_$date"
 	for i in $(seq 1 20) # Iterate over directories (and parallel process each) so that argument list for parallel is short enough. The 20 comes from the number of folders selected in the download.
 	do
-		d=$(echo $i-1 | bc -l)	# compute $i - 1
-		parallel -j20 "PREP/getRxnDet_MBM_v3.awk {} >> PREP/scr_$date/rxds{%}.tsv" ::: $(ls DATA/RXN/p$d/n*xml)
+	    echo $i
+	    d=$(echo $i-1 | bc -l)	# compute $i - 1
+	    parallel -j20 "PREP/getRxnDet_MBM_v4.awk {} >> PREP/P_RXN/scr_$date/rxds{%}.tsv" ::: $(ls DATA/RXN/p$d/n*xml)
 	done
-
 	# Concatenate results of previous script
 	cat PREP/P_RXN/scr_$date/* > PREP/P_RXN/scr_$date/all_rxds.tsv
-
+	awk '!x[$0]++' PREP/P_RXN/scr_$date/all_rxds.tsv > PREP/P_RXN/scr_$date/unique_all_rxds.tsv
+	cat PREP/P_RXN/head_rxds.tsv PREP/P_RXN/scr_$date/unique_all_rxds.tsv > PREP/P_RXN/scr_$date/heads_unique_all_rxds.tsv
 	# Extract date from RXN for each substance in SS reactions (from file all_rxds.tsv)
 #	./PREP/getSubsDates.awk PREP/scr_$date/all_rxds.tsv > PREP/Data/subs_dates.tsv
 fi
-
 # Extract rxn ID, reactants, reagents, etc..., dates. from rxn data
 if [ -n "$preproc_sub" ]; then
 	mkdir "PREP/P_SUB/scr_$date"
